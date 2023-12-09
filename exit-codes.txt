@@ -1,0 +1,4 @@
+@ Define '-1': Unnamed error.
+@ Define '0': No errors and warnings. Successfully.
+@ Define '43': Value is empty. None type.
+@ Define '44': Not founded.
