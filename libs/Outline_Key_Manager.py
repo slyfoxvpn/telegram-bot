@@ -26,7 +26,9 @@ def init_check():
 
 def get_all_keys():
     init_check()
-    return client.get_keys()
+    all_keys = client.get_keys()
+    debug.info(all_keys)
+    return all_keys
 
 
 def get_key(key_to_find):
