@@ -1,91 +1,103 @@
 from outline_vpn.outline_vpn import OutlineVPN
 
-def my_decorator(func):
-    def wrapper():
-        print("Что-то происходит перед вызовом функции")
-        func()
-        print("Что-то происходит после вызова функции")
-    return wrapper
+class debug:
+    def info(message):
+        if debug_keys == True:
+            print(f"[Outline Key Manager] [INFO] {message}")
+    
 
-def init(api_url, cert_sha256 = None):
+    def error(message):
+        print(f"[Outline Key Manager] [ERROR] {message}")
+
+
+def init(api_url, cert_sha256 = None, debug = False):
     global client
+    global debug_keys
     client = OutlineVPN(api_url, cert_sha256)
+    debug_keys = debug
     return client
 
+
 def init_check():
-    if not 'asfasf' in locals():
-        return 43
+    if not 'client' in globals():
+        debug.error("Outline Key Manager is not definded. Use Outline_Key_Manager.init(<your_api_key>, debug=<True/False>)")
+        return 43 # Exit or Return???
 
 
 def get_all_keys():
-    if 'client' in globals():
-        return client.get_keys()
-    else:
-        return 43
+    init_check()
+    return client.get_keys()
+
 
 def get_key(key_to_find):
-    if 'client' in globals():
-        for key in client.get_keys():
-            if key.name == key_to_find:
-                return key
-            else:
-                return 44
-    else:
-        return 43
-
-# ----------------------------
-
-# def get_all_keys():
-#     return client.get_keys()
-
-
-def get_key(name):
+    init_check()
     for key in client.get_keys():
-        if key.name == name:
+        if key.name == key_to_find:
+            debug.info(key)
             return key
     return 44
 
 
-def new_key(name = None):
-    if (client.create_key(name)):
+def new_key(name = None, renew = False):
+    init_check()
+    if get_key(name) == 44 or renew == True:
+        debug.info(client.create_key(name))
         return 0
-    else: # Key is exist error??
-        return -1 
+    return 40
 
 
-def rename_key(name, new_name):
-    try:
-        if (client.rename_key(get_key(name).key_id, new_name)):
+def rename_key(old_name, new_name):
+    init_check()
+    key_to_rename = get_key(old_name)
+    if key_to_rename != 44:
+        if client.rename_key(get_key(old_name).key_id, new_name):
+            debug.info(f"Key `{old_name}` successfully renamed to `{new_name}`")
             return 0
         else:
+            debug.error("Unnamed error. Return status is `-1`.")
             return -1
-    except AttributeError:
+    else:
+        debug.info(f"Key `{old_name}` is not founded.")
         return 44
 
-def set_limit(name, limit):
-    try:
-        if (client.add_data_limit(get_key(name).key_id, 1000 * 1000 * limit)):
+
+def set_limit(name, limit_MB):
+    init_check()
+    if name != 44:
+        if client.add_data_limit(get_key(name).key_id, 1000 * 1000 * limit_MB):
+            debug.info(f"Limit {limit_MB}MB is set for `{name}` key.")
             return 0
         else:
+            debug.error("Unnamed error. Return status is `-1`.")
             return -1
-    except AttributeError:
+    else:
+        debug.info(f"Key `{name}` is not founded.")
         return 44
+
 
 def remove_limit(name):
-    try:
-        if (client.delete_data_limit(get_key(name).key_id)):
+    init_check()
+    if name != 44:
+        if client.delete_data_limit(get_key(name).key_id):
+            debug.info(f"Limit is unset for `{name}` key.")
             return 0
         else:
+            debug.error("Unnamed error. Return status is `-1`.")
             return -1
-    except AttributeError:
+    else:
+        debug.info(f"Key `{name}` is not founded.")
         return 44
 
 
 def remove_key(name):
-    try:
-        if (client.delete_key(get_key(name).key_id)):
+    init_check()
+    if name != 44:
+        if client.delete_key(get_key(name).key_id):
+            debug.info(f"Key `{name}` deleted.")
             return 0
         else:
+            debug.error("Unnamed error. Return status is `-1`.")
             return -1
-    except AttributeError:
+    else:
+        debug.info(f"Key `{name}` is not founded.")
         return 44
