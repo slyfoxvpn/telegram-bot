@@ -79,7 +79,7 @@ async def callback_query_handler_all_product(callback_query: types.CallbackQuery
 # Callback query for germany_srv
 @dp.callback_query(lambda c: c.data == 'germany_srv')
 async def callback_query_handler_germany_srv(callback_query: types.CallbackQuery):
-    keyboard = builders.keyboardBuilder(country_flag="🇩🇪", country_name="germany")
+    keyboard = builders.keyboard_builder(country_flag="🇩🇪", country_name="germany")
     await bot.edit_message_text(text="*Список доступных тарифов на локации 🇩🇪 Германия, Франкфурт:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
 
