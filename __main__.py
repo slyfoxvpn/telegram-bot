@@ -34,21 +34,22 @@ async def cmd_start(message: Message, command: CommandObject):
 # 'start' default handler
 @dp.message(F.text, CommandStart())
 async def cmd_start(message: types.Message):
-    keyboard = types.ReplyKeyboardMarkup(keyboard=[
-        [types.KeyboardButton(text="❔❓Как это сделать?")],
-    ], resize_keyboard=True, input_field_placeholder="Денис денисочка")
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text="🗃️ Авторизоваться", callback_data='auth')],
+        [types.InlineKeyboardButton(text="Главное меню (УДАЛИТЬ ПРИ РЕЛИЗЕ)", callback_data='main_menu')]
+    ])
+    await message.answer("*Привет! На связи команда SlyFox 🦊\nДавайте найдем ваш аккаунт.*", reply_markup=keyboard)
 
-    await message.answer("*Привет! На связи команда SlyFox.\nДавайте найдем ваш аккаунт.*")
-    await message.answer("", reply_markup=keyboard)
 
 # Main munu
-@dp.message(F.text, Command("Menu"))
-async def all_products(message: types.Message):
+@dp.callback_query(lambda c: c.data == 'main_menu')
+async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🗃️ Локации и тарифы", callback_data='germany_srv')],
         [types.InlineKeyboardButton(text="⚙️ Настройки аккаунта", callback_data='individual')]
     ])
-    await message.answer("*Главное меню:*", reply_markup=keyboard)
+    await bot.edit_message_text("*Главное меню:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    await bot.answer_callback_query(callback_query.id)
 
 
 # All products code
