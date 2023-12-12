@@ -9,12 +9,14 @@ from aiogram import F
 from aiogram.types import Message
 from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.enums import ParseMode
-from aiogram.types import KeyboardButton, reply_keyboard_markup
+from aiogram import Router
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, CallbackQuery
 
 
 logging.basicConfig(level=logging.INFO) # Enable logging
 bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="Markdown") # Bot init
 dp = Dispatcher() # Dispatcher (?)
+router = Router(name=__name__)
 
 
 # 'start' with auth code (if exist)
@@ -39,7 +41,25 @@ async def cmd_start(message: types.Message):
     ], resize_keyboard=True, input_field_placeholder="Денис денисочка")
 
     await message.answer("*Привет! На связи команда SlyFox.\nДавайте найдем ваш аккаунт.*")
-    await message.answer("🦊", reply_markup=keyboard)
+    await message.answer("", reply_markup=keyboard)
+
+
+# All products code
+@dp.message(F.text, Command("AllProducts"))
+async def all_products(message: types.Message):
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text="Test", callback_data='button1')]
+    ])
+    await message.answer("*Список доступных продуктов:*", reply_markup=keyboard)
+
+
+# Callback query for button1
+@dp.callback_query(lambda c: c.data == 'button1')
+async def callback_query_handler(callback_query: types.CallbackQuery):
+    await bot.send_message(callback_query.from_user.id, 'Нажата первая кнопка!')
+    await bot.answer_callback_query(callback_query.id)
+
+
 
 
 # Я хотел объединить это, но чет не работает
