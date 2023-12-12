@@ -56,7 +56,7 @@ async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == 'all_products')
 async def callback_query_handler_all_product(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🇩🇪 Германия, Франкфурт - от 200 ₽", callback_data='germany_srv')],
+        [types.InlineKeyboardButton(text="🇩🇪 Германия, Франкфурт - от 150 ₽", callback_data='germany_srv')],
         [types.InlineKeyboardButton(text="🏳️ Заказать индивидуальный сервер", callback_data='individual')]
     ])
     await bot.edit_message_text("*Список доступных продуктов:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
@@ -73,7 +73,6 @@ async def callback_query_handler(callback_query: types.CallbackQuery):
         [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (∞ GB) - 550 ₽ / mo", callback_data='germany_srv_unlimited')],
         [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_all_products')]
     ])
-
     await bot.edit_message_text(text="*Список доступных тарифов на локации 🇩🇪 Германия, Франкфурт:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
 
@@ -91,24 +90,6 @@ async def callback_query_handler(callback_query: types.CallbackQuery):
     await callback_query_handler_all_product(callback_query=callback_query)
     await bot.answer_callback_query(callback_query.id)
 
-
-# Я хотел объединить это, но чет не работает
-# @dp.message(CommandStart(deep_link=True, magic=F.args.regexp(re.compile(r'auth_(\d+)'))))
-# async def cmd_start(message: types.Message, command: None):
-#     if command and command.args:
-#         auth_number = command.args.split("_")[1]
-#         await message.answer(f"*Вы успешно авторизовались, используя код {auth_number}.*")
-#     else:
-#         await message.answer("*Привет! На связи команда SlyFox.*")
-
-#     await message.answer("🦊")
-
-
-# @dp.message(F.text, Command("admin"))
-# async def adm(message: types.Message):
-#     if (message.chat.id == 1826617805):
-#         await message.answer("Введите код администратора:")
-        
 
 # Запуск процесса поллинга новых апдейтов
 async def main():
