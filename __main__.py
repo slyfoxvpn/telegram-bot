@@ -10,6 +10,7 @@ from aiogram.types import Message
 from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.enums import ParseMode
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, CallbackQuery
+import builders
 
 
 logging.basicConfig(level=logging.INFO) # Enable logging
@@ -78,13 +79,7 @@ async def callback_query_handler_all_product(callback_query: types.CallbackQuery
 # Callback query for germany_srv
 @dp.callback_query(lambda c: c.data == 'germany_srv')
 async def callback_query_handler_germany_srv(callback_query: types.CallbackQuery):
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (10 GB) - 150 ₽ / mo", callback_data='germany_srv_10')],
-        [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (20 GB) - 250 ₽ / mo", callback_data='germany_srv_20')],
-        [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (40 GB) - 400 ₽ / mo", callback_data='germany_srv_40')],
-        [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (∞ GB) - 550 ₽ / mo", callback_data='germany_srv_unlimited')],
-        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_all_products')]
-    ])
+    keyboard = builders.keyboardBuilder(country_flag="🇩🇪", country_name="germany")
     await bot.edit_message_text(text="*Список доступных тарифов на локации 🇩🇪 Германия, Франкфурт:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
 
