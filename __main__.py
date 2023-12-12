@@ -46,7 +46,18 @@ async def cmd_start(message: types.Message):
 async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🗃️ Локации и тарифы", callback_data='germany_srv')],
-        [types.InlineKeyboardButton(text="⚙️ Настройки аккаунта", callback_data='individual')]
+        [types.InlineKeyboardButton(text="⚙️ Настройки аккаунта", callback_data='account_settings')]
+    ])
+    await bot.edit_message_text("*Главное меню:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    await bot.answer_callback_query(callback_query.id)
+
+
+# Main munu
+@dp.callback_query(lambda c: c.data == 'account_settings')
+async def callback_query_handler_account_settings(callback_query: types.CallbackQuery):
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text="🗃️ Выбрать язык (Language)", callback_data='change_language')],
+        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_main_menu')]
     ])
     await bot.edit_message_text("*Главное меню:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
@@ -57,7 +68,8 @@ async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
 async def callback_query_handler_all_product(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🇩🇪 Германия, Франкфурт - от 150 ₽", callback_data='germany_srv')],
-        [types.InlineKeyboardButton(text="🏳️ Заказать индивидуальный сервер", callback_data='individual')]
+        [types.InlineKeyboardButton(text="🏳️ Заказать индивидуальный сервер", callback_data='individual')],
+        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_main_menu')]
     ])
     await bot.edit_message_text("*Список доступных продуктов:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
@@ -65,7 +77,7 @@ async def callback_query_handler_all_product(callback_query: types.CallbackQuery
 
 # Callback query for germany_srv
 @dp.callback_query(lambda c: c.data == 'germany_srv')
-async def callback_query_handler(callback_query: types.CallbackQuery):
+async def callback_query_handler_germany_srv(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (10 GB) - 150 ₽ / mo", callback_data='germany_srv_10')],
         [types.InlineKeyboardButton(text="🇩🇪 Тариф Lite (20 GB) - 250 ₽ / mo", callback_data='germany_srv_20')],
@@ -77,10 +89,28 @@ async def callback_query_handler(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
 
 
+# Callback query for germany_srv_10
+@dp.callback_query(lambda c: c.data == 'germany_srv_10')
+async def callback_query_handler(callback_query: types.CallbackQuery):
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text="🇩🇪 Тинькофф", url="https://www.tinkoff.ru/")],
+        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_germany_srv')]
+    ])
+    await bot.edit_message_text(text="*Список доступных тарифов на локации 🇩🇪 Германия, Франкфурт:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    await bot.answer_callback_query(callback_query.id)
+
+
 # Callback query for individual
 @dp.callback_query(lambda c: c.data == 'individual')
 async def callback_query_handler(callback_query: types.CallbackQuery):
-    await bot.send_message(callback_query.from_user.id, 'Нажата первая кнопка!')
+    await bot.send_message(callback_query.from_user.id, 'Вы можете заказать индивидуальный тариф на любой из 12 доступных локаций. На этом сервере будет расположен лишь ваш аккаунт. Вы можете добавлять и удалять неограниченное колличество ключей.')
+    await bot.answer_callback_query(callback_query.id)
+
+
+# Back to main menu
+@dp.callback_query(lambda c: c.data == 'back_to_main_menu')
+async def callback_query_handler(callback_query: types.CallbackQuery):
+    await callback_query_handler_main_menu(callback_query=callback_query)
     await bot.answer_callback_query(callback_query.id)
 
 
@@ -88,6 +118,13 @@ async def callback_query_handler(callback_query: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == 'back_to_all_products')
 async def callback_query_handler(callback_query: types.CallbackQuery):
     await callback_query_handler_all_product(callback_query=callback_query)
+    await bot.answer_callback_query(callback_query.id)
+
+
+# Back to all germany_srv handler
+@dp.callback_query(lambda c: c.data == 'back_to_germany_srv')
+async def callback_query_handler(callback_query: types.CallbackQuery):
+    await callback_query_handler_germany_srv(callback_query=callback_query)
     await bot.answer_callback_query(callback_query.id)
 
 
