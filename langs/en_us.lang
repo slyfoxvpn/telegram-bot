@@ -1,0 +1,10 @@
+[default]
+start_command=Привет! На связи команда SlyFox 🦊\nДавайте найдем ваш аккаунт.
+main_menu=Главное меню
+list_of_avaliable_products=List of avaliable products:
+
+button_auth=Авторизоваться
+button_locations_and_tariffs=Локации и тарифы
+button_account_settings=Account settings
+button_choose_language=Choose language (Выбрать язык)
+button_back=Back

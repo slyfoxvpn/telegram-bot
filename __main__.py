@@ -11,11 +11,19 @@ from aiogram.filters import Command, CommandStart, CommandObject
 from aiogram.enums import ParseMode
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, CallbackQuery
 import builders
+from readers.language_reader import LanguageManager
 
 
 logging.basicConfig(level=logging.INFO) # Enable logging
 bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="Markdown") # Bot init
 dp = Dispatcher() # Dispatcher (?)
+
+
+# Init language (temporaly)
+global lang_manager
+global lang
+lang_manager = LanguageManager('langs/ru_ru.lang')
+lang = lang_manager.get_section_keys()
 
 
 # 'start' with auth code (if exist)
@@ -36,18 +44,18 @@ async def cmd_start(message: Message, command: CommandObject):
 @dp.message(F.text, CommandStart())
 async def cmd_start(message: types.Message):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🗃️ Авторизоваться", callback_data='auth')],
+        [types.InlineKeyboardButton(text=f"🗃️ {lang['button_auth']}", callback_data='auth')],
         [types.InlineKeyboardButton(text="Главное меню (УДАЛИТЬ ПРИ РЕЛИЗЕ)", callback_data='main_menu')]
     ])
-    await message.answer("*Привет! На связи команда SlyFox 🦊\nДавайте найдем ваш аккаунт.*", reply_markup=keyboard)
+    await message.answer(f"*{lang['start_command']}*", reply_markup=keyboard)
 
 
 # Main munu
 @dp.callback_query(lambda c: c.data == 'main_menu')
 async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🗃️ Локации и тарифы", callback_data='germany_srv')],
-        [types.InlineKeyboardButton(text="⚙️ Настройки аккаунта", callback_data='account_settings')]
+        [types.InlineKeyboardButton(text=f"🗃️ {lang['button_locations_and_tariffs']}", callback_data='germany_srv')],
+        [types.InlineKeyboardButton(text=f"⚙️ {lang['button_account_settings']}", callback_data='account_settings')]
     ])
     await bot.edit_message_text("*Главное меню:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
@@ -57,10 +65,10 @@ async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == 'account_settings')
 async def callback_query_handler_account_settings(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🗃️ Выбрать язык (Language)", callback_data='change_language')],
-        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_main_menu')]
+        [types.InlineKeyboardButton(text=f"🗃️ {lang['button_choose_language']}", callback_data='change_language')],
+        [types.InlineKeyboardButton(text=f"◀️ {lang['button_back']}", callback_data='back_to_main_menu')]
     ])
-    await bot.edit_message_text("*Главное меню:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    await bot.edit_message_text(f"*{lang['main_menu']}*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
 
 
@@ -70,9 +78,9 @@ async def callback_query_handler_all_product(callback_query: types.CallbackQuery
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🇩🇪 Германия, Франкфурт - от 150 ₽", callback_data='germany_srv')],
         [types.InlineKeyboardButton(text="🏳️ Заказать индивидуальный сервер", callback_data='individual')],
-        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_main_menu')]
+        [types.InlineKeyboardButton(text=f"◀️ {lang['button_back']}", callback_data='back_to_main_menu')]
     ])
-    await bot.edit_message_text("*Список доступных продуктов:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    await bot.edit_message_text(f"*{lang['list_of_avaliable_products']}*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
 
 
@@ -89,7 +97,7 @@ async def callback_query_handler_germany_srv(callback_query: types.CallbackQuery
 async def callback_query_handler(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text="🔵 ЮКаssa", url="https://yookassa.ru/")],
-        [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_germany_srv')]
+        [types.InlineKeyboardButton(text=f"◀️ {lang['button_back']}", callback_data='back_to_germany_srv')]
     ])
     await bot.edit_message_text(text="*Список доступных тарифов на локации 🇩🇪 Германия, Франкфурт:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
