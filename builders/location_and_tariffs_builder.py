@@ -8,6 +8,3 @@ def keyboard_builder(country_flag, country_name):
         [types.InlineKeyboardButton(text=f"{country_flag} Тариф Lite (∞ GB) - 550 ₽ / mo", callback_data=f'{country_name}_srv_unlimited')],
         [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_all_products')]
     ])
-
-def payments_builder():
-    pass
