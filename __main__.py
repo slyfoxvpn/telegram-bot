@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
-from config_reader import config
+from readers.config_reader import config
 from aiogram import F
 from aiogram.types import Message
 from aiogram.filters import Command, CommandStart, CommandObject
@@ -88,7 +88,7 @@ async def callback_query_handler_germany_srv(callback_query: types.CallbackQuery
 @dp.callback_query(lambda c: c.data == 'germany_srv_10')
 async def callback_query_handler(callback_query: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text="🇩🇪 Тинькофф", url="https://www.tinkoff.ru/")],
+        [types.InlineKeyboardButton(text="🔵 ЮКаssa", url="https://yookassa.ru/")],
         [types.InlineKeyboardButton(text="◀️ Назад", callback_data='back_to_germany_srv')]
     ])
     await bot.edit_message_text(text="*Список доступных тарифов на локации 🇩🇪 Германия, Франкфурт:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-clean_items=("__pycache__")
+clean_items=("__pycache__", "readers/__pycache__")
 
 for item in "${clean_items[@]}"; do
     if [ -e "$item" ]; then
