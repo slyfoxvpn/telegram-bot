@@ -57,7 +57,7 @@ async def callback_query_handler_main_menu(callback_query: types.CallbackQuery):
         [types.InlineKeyboardButton(text=f"🗃️ {lang['button_locations_and_tariffs']}", callback_data='germany_srv')],
         [types.InlineKeyboardButton(text=f"⚙️ {lang['button_account_settings']}", callback_data='account_settings')]
     ])
-    await bot.edit_message_text("*Главное меню:*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    await bot.edit_message_text(f"*{lang['main_menu']}*", reply_markup=keyboard, chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
     await bot.answer_callback_query(callback_query.id)
 
 
