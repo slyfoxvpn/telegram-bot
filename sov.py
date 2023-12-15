@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
-# from config_reader import config
+from config_reader import config
 from aiogram import F
 from aiogram.types import Message
 from aiogram.filters import Command, CommandStart, CommandObject, StateFilter
@@ -45,10 +45,23 @@ def password_valid(password):
             return True
     return False
 
+old_user_message = None
+old_bot_message = None
+async def try_again_message(message, text):
+    global old_user_message
+    global old_bot_message
+    if old_user_message != None:
+        await bot.delete_message(message_id=old_user_message, chat_id=message.from_user.id)
+        try: await bot.edit_message_text(text=text, message_id=old_bot_message, chat_id=message.from_user.id, parse_mode='HTML')
+        except: pass
+    else:
+        sended_message = await message.answer(text, parse_mode='HTML')
+        old_bot_message = sended_message.message_id
+    old_user_message = message.message_id
+
 # Init bot
 logging.basicConfig(level=logging.INFO) # Enable logging
-# bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="Markdown")
-bot = Bot(token='5460754777:AAE5kuh4WBE9WljuYrhxB8cpjx7zGPPCYkg', parse_mode="Markdown")
+bot = Bot(token=config.bot_token.get_secret_value(), parse_mode="Markdown")
 dp = Dispatcher()
 
 
@@ -109,23 +122,28 @@ async def callback_query_handler_login(callback_query: types.CallbackQuery, stat
 # Register
 @dp.callback_query(lambda c: c.data == 'register', StateFilter(None))
 async def callback_query_handler_register(callback_query: types.CallbackQuery, state: FSMContext):
-    await bot.edit_message_text(text="Придумайте логин: ", chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    sended_message = await bot.edit_message_text(text="Придумайте логин: ", chat_id=callback_query.from_user.id, message_id=callback_query.message.message_id)
+    global old_bot_message
+    old_bot_message = sended_message.message_id
     await state.set_state(FSM.register_username_state)
 
 # Username input
 @dp.message(FSM.register_username_state)
 async def register_username_input(message: Message, state: FSMContext):
     if not username_valid(message.text):
-        await message.answer('В сообщении содержится символы, отличные от A-Z a-z 0-9 "_" "-" '
-                             'Попробуйте еще раз', parse_mode='HTML')
+        await try_again_message(message, f'В логине "{message.text}" содержится символы, отличные от A-Z a-z 0-9 "_" "-". Попробуйте еще раз')
         return None
     elif False: # Check username in database
         await message.answer('Имя пользователя уже занято! \nПопробуйте еще раз')
         return None
     # Some other checks
     global username
+    global old_user_message
     username = message.text
-    await message.answer('Успех! \nПридумайте пароль: ')
+    await bot.delete_message(message_id=message.message_id, chat_id=message.from_user.id)
+    if old_user_message != None: await bot.delete_message(message_id=old_user_message, chat_id=message.from_user.id)
+    old_user_message = None
+    await bot.edit_message_text(text='Успех! \nПридумайте пароль: ', message_id=old_bot_message, chat_id=message.from_user.id)
     await state.set_state(FSM.register_password_state)
 
 # Password input
