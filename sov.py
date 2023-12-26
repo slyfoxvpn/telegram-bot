@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters.command import Command
-from config_reader import config
+from readers.config_reader import config
 from aiogram import F
 from aiogram.types import Message
 from aiogram.filters import Command, CommandStart, CommandObject, StateFilter
